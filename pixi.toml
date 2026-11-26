@@ -10,6 +10,7 @@ version = "0.1.0"
 ros-jazzy-desktop = ">=0.11.0,<0.12"
 ros-jazzy-turtlebot3 = ">=2.3.7,<3"
 colcon-common-extensions = ">=0.3.0,<0.4"
+ros-jazzy-slam-toolbox = ">=2.8.5,<3"
 
 [activation.env]
 ROS_DOMAIN_ID = "4"

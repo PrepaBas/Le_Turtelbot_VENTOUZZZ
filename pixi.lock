@@ -574,6 +574,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/wslink-2.6.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-4.1.2-pyh5ded981_0.conda
       - conda: https://conda.anaconda.org/robostack-jazzy/linux-64/ros-jazzy-desktop-0.11.0-hb0f4dca_31.conda
+      - conda: https://conda.anaconda.org/robostack-jazzy/linux-64/ros-jazzy-slam-toolbox-2.8.5-hb0f4dca_31.conda
       - conda: https://conda.anaconda.org/robostack-jazzy/linux-64/ros-jazzy-turtlebot3-2.3.7-hb0f4dca_31.conda
       - conda: https://conda.anaconda.org/robostack-jazzy/linux-64/ros2-action-msgs-2.0.4-np2py314h53a0733_31.conda
       - conda: https://conda.anaconda.org/robostack-jazzy/linux-64/ros2-action-tutorials-cpp-0.33.11-np2py314h53a0733_31.conda
@@ -9959,6 +9960,14 @@ packages:
   - ros2-distro-mutex 0.21.* jazzy_*
   size: 2055
   timestamp: 1795179096506
+- conda: https://conda.anaconda.org/robostack-jazzy/linux-64/ros-jazzy-slam-toolbox-2.8.5-hb0f4dca_31.conda
+  sha256: 8326614e99452fb63a7f383ee6015839c7d9d8a938d7e5d4fef75d0bbcf3eb9e
+  md5: a41a4f155b483d1f99939ba5770699be
+  depends:
+  - ros2-slam-toolbox ==2.8.5
+  - ros2-distro-mutex 0.21.* jazzy_*
+  size: 2078
+  timestamp: 1795177137333
 - conda: https://conda.anaconda.org/robostack-jazzy/linux-64/ros-jazzy-turtlebot3-2.3.7-hb0f4dca_31.conda
   sha256: b1cdfb9425ef498f8fb0040bd2ffb08f09287eb89352196d85967b1878bd2ea6
   md5: fa0205d3a671216484f412efde6a3df4
