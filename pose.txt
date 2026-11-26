@@ -1,0 +1,56 @@
+Point A:
+transforms:
+- header:
+    stamp:
+      sec: 1795697499
+      nanosec: 509126990
+    frame_id: map
+  child_frame_id: odom
+  transform:
+    translation:
+      x: 0.06136791439333732
+      y: -0.21158278287664078
+      z: 0.0
+    rotation:
+      x: 0.0
+      y: 0.0
+      z: -0.059295198708804266
+      w: 0.9982404917704367
+
+Point B:
+transforms:
+- header:
+    stamp:
+      sec: 1795697710
+      nanosec: 610412980
+    frame_id: map
+  child_frame_id: odom
+  transform:
+    translation:
+      x: 0.032558313175868346
+      y: -0.1609104039025781
+      z: 0.0
+    rotation:
+      x: 0.0
+      y: 0.0
+      z: -0.07496460883547461
+      w: 0.9971861949616753
+
+Point C:
+transforms:
+- header:
+    stamp:
+      sec: 1795697818
+      nanosec: 775510817
+    frame_id: map
+  child_frame_id: odom
+  transform:
+    translation:
+      x: 0.19587911262555457
+      y: -0.2544775666055748
+      z: 0.0
+    rotation:
+      x: 0.0
+      y: 0.0
+      z: -0.111447991377145
+      w: 0.9937702678275295
