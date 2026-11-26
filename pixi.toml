@@ -1,0 +1,17 @@
+[workspace]
+authors = ["TRAN-RUESCHE Bastien <btranruesch@gmail.com>"]
+channels = ['robostack-jazzy', 'conda-forge']
+name = "ws"
+platforms = ['linux-64']
+version = "0.1.0"
+[tasks]
+
+[dependencies]
+ros-jazzy-desktop = ">=0.11.0,<0.12"
+ros-jazzy-turtlebot3 = ">=2.3.7,<3"
+colcon-common-extensions = ">=0.3.0,<0.4"
+
+[activation.env]
+ROS_DOMAIN_ID = "4"
+TURTLEBOT3_MODEL = "Burger"
+LDS_MODEL = "LDS-02"
