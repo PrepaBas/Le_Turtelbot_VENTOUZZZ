@@ -13,5 +13,5 @@ colcon-common-extensions = ">=0.3.0,<0.4"
 
 [activation.env]
 ROS_DOMAIN_ID = "4"
-TURTLEBOT3_MODEL = "Burger"
+TURTLEBOT3_MODEL = "burger"
 LDS_MODEL = "LDS-02"
