@@ -1,14 +1,17 @@
 # Le_Turtelbot_VENTOUZZZ
 
 ## Start
-Run this to create pixi env with ros2
+Run this to create pixi env with ros2 and source the venv :
 ```
-pixi init . -c robostack-jazzy -c conda-forge
-pixi add ros-jazzy-desktop
+pixi shell
 ```
 
-Then add this to pixi.toml
+Then launch navigation stack
 ```
-[activation.env]
-ROS_DOMAIN_ID = "1"
+ros2 launch nav2_bringup bringup_launch.py map:=$(pwd)/maps/my_map.yaml params_file:=$(pwd)/params/nav2_params.yaml
+```
+
+Finaly run custom node
+```
+ros2 run waypoint_ventouzzz waypoint 
 ```
