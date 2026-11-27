@@ -1,56 +1,32 @@
 Point A:
-transforms:
-- header:
-    stamp:
-      sec: 1795697499
-      nanosec: 509126990
-    frame_id: map
-  child_frame_id: odom
-  transform:
-    translation:
-      x: 0.06136791439333732
-      y: -0.21158278287664078
-      z: 0.0
-    rotation:
-      x: 0.0
-      y: 0.0
-      z: -0.059295198708804266
-      w: 0.9982404917704367
+- Translation: [-1.254, -0.925, 0.010]
+- Rotation: in Quaternion (xyzw) [0.000, 0.000, 0.970, -0.243]
+- Rotation: in RPY (radian) [0.000, -0.000, -2.652]
+- Rotation: in RPY (degree) [0.000, -0.000, -151.930]
+- Matrix:
+ -0.882  0.471  0.000 -1.254
+ -0.471 -0.882  0.000 -0.925
+  0.000  0.000  1.000  0.010
+  0.000  0.000  0.000  1.000
 
 Point B:
-transforms:
-- header:
-    stamp:
-      sec: 1795697710
-      nanosec: 610412980
-    frame_id: map
-  child_frame_id: odom
-  transform:
-    translation:
-      x: 0.032558313175868346
-      y: -0.1609104039025781
-      z: 0.0
-    rotation:
-      x: 0.0
-      y: 0.0
-      z: -0.07496460883547461
-      w: 0.9971861949616753
+- Translation: [-0.300, 0.242, 0.010]
+- Rotation: in Quaternion (xyzw) [0.000, 0.000, 0.610, 0.793]
+- Rotation: in RPY (radian) [0.000, -0.000, 1.311]
+- Rotation: in RPY (degree) [0.000, -0.000, 75.143]
+- Matrix:
+  0.256 -0.967  0.000 -0.300
+  0.967  0.256  0.000  0.242
+  0.000  0.000  1.000  0.010
+  0.000  0.000  0.000  1.000
 
 Point C:
-transforms:
-- header:
-    stamp:
-      sec: 1795697818
-      nanosec: 775510817
-    frame_id: map
-  child_frame_id: odom
-  transform:
-    translation:
-      x: 0.19587911262555457
-      y: -0.2544775666055748
-      z: 0.0
-    rotation:
-      x: 0.0
-      y: 0.0
-      z: -0.111447991377145
-      w: 0.9937702678275295
+- Translation: [-1.461, 1.109, 0.010]
+- Rotation: in Quaternion (xyzw) [0.000, 0.000, 0.994, 0.111]
+- Rotation: in RPY (radian) [0.000, -0.000, 2.920]
+- Rotation: in RPY (degree) [0.000, -0.000, 167.282]
+- Matrix:
+ -0.975 -0.220  0.000 -1.461
+  0.220 -0.975  0.000  1.109
+  0.000  0.000  1.000  0.010
+  0.000  0.000  0.000  1.000
