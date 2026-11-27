@@ -6,7 +6,7 @@ from rclpy.node import Node
 from rclpy.action import ActionClient
 from rclpy.qos import qos_profile_sensor_data
 
-from geometry_msgs.msg import PoseStamped, Twist
+from geometry_msgs.msg import PoseStamped, TwistStamped
 from nav2_msgs.action import NavigateToPose
 from action_msgs.msg import GoalStatus
 from sensor_msgs.msg import LaserScan
@@ -33,15 +33,12 @@ WAYPOINTS = [
 # PARAMÈTRES DE LA CALIBRATION (errance aléatoire)
 # ==================================================
 
-CALIB_DURATION = 30.0     # s : durée totale de l'errance
-LINEAR_SPEED = 0.15       # m/s : vitesse d'avance normale
-SLOW_SPEED = 0.07         # m/s : vitesse quand un obstacle approche
-TURN_SPEED = 0.6          # rad/s : vitesse de rotation d'évitement
-WANDER_TURN_MAX = 0.35    # rad/s : amplitude de la dérive aléatoire
-WANDER_PERIOD = (2.0, 4.0)  # s : intervalle entre deux changements de dérive
+CALIB_DURATION = 90.0     # s : durée totale de l'errance
+LINEAR_SPEED = 0.15       # m/s : vitesse d'avance
+TURN_SPEED = 0.6          # rad/s : vitesse de rotation devant un mur
 
-STOP_DIST = 0.35          # m : en dessous, on s'arrête d'avancer et on pivote
-SLOW_DIST = 0.70          # m : en dessous, on ralentit
+STOP_DIST = 0.35          # m : mur devant en dessous de cette distance
+SIDE_BLOCKED_DIST = 0.50  # m : côté considéré bloqué en dessous
 
 FRONT_HALF_ANGLE = math.radians(30)   # secteur avant : ±30°
 SIDE_MIN_ANGLE = math.radians(30)     # secteurs latéraux : de 30° à 90°
@@ -73,17 +70,15 @@ class WaypointNavigator(Node):
         # --- État de la calibration ---
         self.calibration_done = False
         # Publication des vitesses pendant la calibration
-        # (si ton Nav2 attend du TwistStamped, remplace Twist par TwistStamped)
+        # (Jazzy : /cmd_vel est de type TwistStamped)
         self.cmd_vel_pub = self.create_publisher(
-            Twist,
+            TwistStamped,
             'cmd_vel',
             10
         )
 
         self.calib_start_time = None   # s, fixé au premier scan
-        self.wander_turn = 0.0         # dérive angulaire courante
-        self.next_wander_change = 0.0  # s écoulées avant le prochain tirage
-        self.avoid_dir = 0.0           # sens de pivot verrouillé (+1 / -1 / 0)
+        self.avoid_dir = 0.0           # sens de pivot verrouillé (+1 gauche / -1 droite / 0 aucun)
 
         # Le timer tourne dès le départ, mais start_navigation
         # attend que la calibration soit terminée
@@ -132,7 +127,7 @@ class WaypointNavigator(Node):
 
         # --- Fin de la calibration : on arrête le robot ---
         if elapsed >= CALIB_DURATION:
-            self.cmd_vel_pub.publish(Twist())
+            self.publish_velocity(0.0, 0.0)
             return True
 
         # --- Distances minimales par secteur (mesures valides seulement) ---
@@ -140,39 +135,36 @@ class WaypointNavigator(Node):
         left = self.sector_min(msg, SIDE_MIN_ANGLE, SIDE_MAX_ANGLE)
         right = self.sector_min(msg, -SIDE_MAX_ANGLE, -SIDE_MIN_ANGLE)
 
-        cmd = Twist()
-
         if front < STOP_DIST:
-            # Obstacle proche : pivot sur place vers le côté le plus dégagé.
-            # Le sens est verrouillé tant qu'on n'est pas dégagé pour éviter
-            # d'osciller gauche/droite.
+            # Mur devant : on choisit un sens de pivot une seule fois,
+            # puis on le garde jusqu'à ce que l'avant soit dégagé.
             if self.avoid_dir == 0.0:
-                self.avoid_dir = 1.0 if left >= right else -1.0
-            cmd.linear.x = 0.0
-            cmd.angular.z = self.avoid_dir * TURN_SPEED
+                left_blocked = left < SIDE_BLOCKED_DIST
+                right_blocked = right < SIDE_BLOCKED_DIST
+
+                if right_blocked and not left_blocked:
+                    self.avoid_dir = 1.0    # bloqué à droite -> gauche
+                elif left_blocked and not right_blocked:
+                    self.avoid_dir = -1.0   # bloqué à gauche -> droite
+                else:
+                    self.avoid_dir = random.choice((1.0, -1.0))
+
+            self.publish_velocity(0.0, self.avoid_dir * TURN_SPEED)
         else:
+            # Voie libre : tout droit
             self.avoid_dir = 0.0
+            self.publish_velocity(LINEAR_SPEED, 0.0)
 
-            # Dérive aléatoire : on retire une nouvelle valeur régulièrement
-            if elapsed >= self.next_wander_change:
-                self.wander_turn = random.uniform(
-                    -WANDER_TURN_MAX, WANDER_TURN_MAX
-                )
-                self.next_wander_change = elapsed + random.uniform(
-                    *WANDER_PERIOD
-                )
-
-            cmd.linear.x = SLOW_SPEED if front < SLOW_DIST else LINEAR_SPEED
-            cmd.angular.z = self.wander_turn
-
-            # Léger biais pour s'écarter d'un mur latéral trop proche
-            if left < SLOW_DIST and left < right:
-                cmd.angular.z -= 0.2
-            elif right < SLOW_DIST and right < left:
-                cmd.angular.z += 0.2
-
-        self.cmd_vel_pub.publish(cmd)
         return False
+
+    def publish_velocity(self, linear, angular):
+        """Publie une commande de vitesse (TwistStamped, Jazzy)."""
+        cmd = TwistStamped()
+        cmd.header.stamp = self.get_clock().now().to_msg()
+        cmd.header.frame_id = 'base_link'
+        cmd.twist.linear.x = linear
+        cmd.twist.angular.z = angular
+        self.cmd_vel_pub.publish(cmd)
 
     def sector_min(self, msg, angle_a, angle_b):
         """
