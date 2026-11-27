@@ -37,7 +37,7 @@ CALIB_DURATION = 90.0     # s : durée totale de l'errance
 LINEAR_SPEED = 0.15       # m/s : vitesse d'avance
 TURN_SPEED = 0.6          # rad/s : vitesse de rotation devant un mur
 
-STOP_DIST = 0.35          # m : mur devant en dessous de cette distance
+STOP_DIST = 0.25          # m : mur devant en dessous de cette distance
 SIDE_BLOCKED_DIST = 0.50  # m : côté considéré bloqué en dessous
 
 FRONT_HALF_ANGLE = math.radians(30)   # secteur avant : ±30°
