@@ -11,6 +11,12 @@ from nav2_msgs.action import NavigateToPose
 from action_msgs.msg import GoalStatus
 from sensor_msgs.msg import LaserScan
 
+from std_srvs.srv import Empty
+from geometry_msgs.msg import PoseStamped, TwistStamped, PoseWithCovarianceStamped
+
+# =====================================
+CALIB_MAX_DURATION = 180.0   
+AMCL_SIGMA_OK = 0.3          
 
 # ==================================================
 # WAYPOINTS : (x, y, qz, qw)
@@ -80,6 +86,14 @@ class WaypointNavigator(Node):
         self.calib_start_time = None   # s, fixé au premier scan
         self.avoid_dir = 0.0           # sens de pivot verrouillé (+1 gauche / -1 droite / 0 aucun)
 
+
+        # service to reset filter particule of AMCL
+        self.global_loc_client = self.create_client(Empty, '/reinitialize_global_localization')
+        self.localization_requested = False
+        self.amcl_sigma = float('inf')
+        self.create_subscription(PoseWithCovarianceStamped, 'amcl_pose', self.amcl_callback, 10)
+
+
         # Le timer tourne dès le départ, mais start_navigation
         # attend que la calibration soit terminée
         self.start_timer = self.create_timer(
@@ -94,6 +108,10 @@ class WaypointNavigator(Node):
     # ==================================================
     # SCAN (appelé à chaque message sur /scan)
     # ==================================================
+
+    def amcl_callback(self, msg):
+        c = msg.pose.covariance          # row-major 6x6: [0]=var x, [7]=var y
+        self.amcl_sigma = math.sqrt(c[0] + c[7])
 
     def scan_callback(self, msg):
 
@@ -117,6 +135,16 @@ class WaypointNavigator(Node):
         Retourne True quand la calibration est terminée,
         False sinon.
         """
+        if not self.localization_requested:
+            if not (self.global_loc_client.service_is_ready()
+                    and self.nav_client.server_is_ready()):
+                self.get_logger().info('Waiting for AMCL / Nav2...', throttle_duration_sec=2.0)
+                return False
+            self.global_loc_client.call_async(Empty.Request())   # don't block inside a callback
+            self.amcl_sigma = float('inf')
+            self.localization_requested = True
+            self.get_logger().info('Global localization requested.')
+            
         now = self.get_clock().now().nanoseconds / 1e9
 
         if self.calib_start_time is None:
